@@ -2,7 +2,7 @@
   "title": "Port pulse-remote-web to React Native - build plan",
   "description": "Implementation roadmap with references to scoped notes under .opencode/*.md",
   "steps": [
-    { "done": false, "step": "Set up navigation tabs (Sinks initial) per rn-navigation-plan.md" },
+    { "done": true, "step": "Set up navigation tabs (Sinks initial) per rn-navigation-plan.md" }
     { "done": false, "step": "Implement websocket client hook per ws-client-plan.md" },
     { "done": false, "step": "Create config store (AsyncStorage) per config-storage-plan.md" },
     { "done": false, "step": "Implement volume store with optimistic/throttle per volume-store-plan.md" },
