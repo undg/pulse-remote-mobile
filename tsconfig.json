@@ -1,6 +1,14 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "baseUrl": "./src",
+    "paths": {
+      "config/generated/*": ["config/generated/*"],
+      "config/*": ["config/*"],
+      "ws/*": ["ws/*"],
+      "state/*": ["state/*"]
+    }
+  },
+  "include": ["./src/**/*", "./App.tsx", "./index.ts"]
 }
