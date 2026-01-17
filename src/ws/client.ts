@@ -6,6 +6,7 @@ export type WsClientOptions = {
   url: string
   reconnect?: boolean
   reconnectIntervalsMs?: number[]
+  enabled?: boolean
 }
 
 export type WsClient = {
@@ -19,7 +20,7 @@ export type WsClient = {
 
 const defaultBackoff = [1000, 2000, 5000]
 
-export function useWebSocketClient({ url, reconnect = true, reconnectIntervalsMs = defaultBackoff }: WsClientOptions): WsClient {
+export function useWebSocketClient({ url, reconnect = true, reconnectIntervalsMs = defaultBackoff, enabled = true }: WsClientOptions): WsClient {
   const [status, setStatus] = useState<WsStatus>('Connecting')
   const [lastMessage, setLastMessage] = useState<MessageEvent<any> | undefined>(undefined)
   const [lastJson, setLastJson] = useState<any>(undefined)
@@ -46,6 +47,10 @@ export function useWebSocketClient({ url, reconnect = true, reconnectIntervalsMs
   const connect = useCallback(
     (nextUrl?: string) => {
       const targetUrl = nextUrl ?? currentUrlRef.current
+      if (!targetUrl) {
+        setStatus('Closed')
+        return
+      }
       currentUrlRef.current = targetUrl
       cleanup()
       setStatus('Connecting')
@@ -103,11 +108,13 @@ export function useWebSocketClient({ url, reconnect = true, reconnectIntervalsMs
   }, [reconnect])
 
   useEffect(() => {
-    connect(url)
+    if (enabled && url) {
+      connect(url)
+    }
     return () => {
       cleanup()
     }
-  }, [url, connect, cleanup])
+  }, [url, connect, cleanup, enabled])
 
   return {
     status,

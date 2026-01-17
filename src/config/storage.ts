@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import RNAsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState, useCallback } from 'react'
 
 const DEFAULTS = {
-  hostname: '',
+  hostname: '192.168.1.244',
   port: '8448',
   endpoint: '/api/v1/ws',
   minVolume: 0,
@@ -23,7 +23,7 @@ function deriveServerUrl(hostname: string, port: string, endpoint: string) {
 
 async function loadConfig(): Promise<Config> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY)
+    const raw = await RNAsyncStorage.getItem(STORAGE_KEY)
     if (!raw) {
       const serverUrl = deriveServerUrl(DEFAULTS.hostname, DEFAULTS.port, DEFAULTS.endpoint)
       return { ...DEFAULTS, serverUrl }
@@ -46,18 +46,21 @@ async function loadConfig(): Promise<Config> {
 
 async function saveConfig(config: Config) {
   const { serverUrl, ...rest } = config
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(rest))
+  await RNAsyncStorage.setItem(STORAGE_KEY, JSON.stringify(rest))
 }
 
 export function useConfig() {
-  const [config, setConfig] = useState<Config>({ ...DEFAULTS, serverUrl: deriveServerUrl(DEFAULTS.hostname, DEFAULTS.port, DEFAULTS.endpoint) })
+  const initialServerUrl = deriveServerUrl(DEFAULTS.hostname, DEFAULTS.port, DEFAULTS.endpoint)
+  const [config, setConfig] = useState<Config>({ ...DEFAULTS, serverUrl: initialServerUrl })
   const [loading, setLoading] = useState(true)
-  const [serverUrl, setServerUrl] = useState(config.serverUrl)
+  const [serverUrl, setServerUrl] = useState(initialServerUrl)
+  const [hasUrl, setHasUrl] = useState(Boolean(DEFAULTS.hostname))
 
   useEffect(() => {
     loadConfig().then(value => {
       setConfig(value)
       setServerUrl(value.serverUrl)
+      setHasUrl(Boolean(value.hostname))
       setLoading(false)
     })
   }, [])
@@ -73,6 +76,7 @@ export function useConfig() {
       const showMonitoredSources = partial.showMonitoredSources ?? prev.showMonitoredSources
       const nextServerUrl = deriveServerUrl(hostname, port, endpoint)
       setServerUrl(nextServerUrl)
+      setHasUrl(Boolean(hostname))
       const next = { hostname, port, endpoint, minVolume, maxVolume, stepVolume, showMonitoredSources, serverUrl: nextServerUrl }
       saveConfig(next)
       return next
@@ -84,8 +88,9 @@ export function useConfig() {
     const next = { ...DEFAULTS, serverUrl: nextServerUrl }
     setConfig(next)
     setServerUrl(nextServerUrl)
+    setHasUrl(Boolean(next.hostname))
     saveConfig(next)
   }, [])
 
-  return { config, serverUrl, loading, updateConfig, resetConfig }
+  return { config, serverUrl, loading, hasUrl, updateConfig, resetConfig }
 }
