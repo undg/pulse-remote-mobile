@@ -1,0 +1,23 @@
+{
+  "title": "Port pulse-remote-web to React Native",
+  "description": "Small, LLM-friendly checklist to guide porting the pulse-remote-web app to React Native using the pulse-remote websocket server and REST API.",
+  "steps": [
+    { "done": false, "step": "Inspect pulse-remote-web architecture and feature set" },
+    { "done": false, "step": "List core screens and user flows to port" },
+    { "done": false, "step": "Map REST and websocket endpoints from swagger/types" },
+    { "done": false, "step": "Identify shared domain models and types for reuse" },
+    { "done": false, "step": "Set up React Native project structure for screens and services" },
+    { "done": false, "step": "Build websocket client wrapper with reconnect and ping/pong" },
+    { "done": false, "step": "Create REST API client with base URL and interceptors" },
+    { "done": false, "step": "Port UI for devices/sinks list with sliders" },
+    { "done": false, "step": "Port UI for device details and controls" },
+    { "done": false, "step": "Port control interactions (send commands, receive state)" },
+    { "done": false, "step": "Handle real-time updates from websocket across screens" },
+    { "done": false, "step": "Implement error, loading, and empty states" },
+    { "done": false, "step": "Add navigation structure and deep links if needed" },
+    { "done": false, "step": "Persist user/session settings locally" },
+    { "done": false, "step": "Add basic theming and reusable components" },
+    { "done": false, "step": "Test flows against pulse-remote server (mock or live)" },
+    { "done": false, "step": "Verify feature parity with web and note gaps" }
+  ]
+}
