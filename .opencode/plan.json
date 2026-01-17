@@ -6,7 +6,7 @@
     { "done": true, "step": "List RN screens: sinks, sources, config, about" },
     { "done": true, "step": "Map websocket actions and payload types from generated/message" },
     { "done": true, "step": "Map status shape (sinks, sinkInputs, sources, buildInfo)" },
-    { "done": false, "step": "Set up RN navigation landing on sinks list" },
+    { "done": true, "step": "Set up RN navigation landing on sinks list" }
     { "done": false, "step": "Build websocket client with auto-reconnect and JSON send" },
     { "done": false, "step": "Create volume state store with optimistic updates and throttle" },
     { "done": false, "step": "Implement sinks screen with sliders and sink-input nesting" },
