@@ -11,7 +11,7 @@
     { "done": true, "step": "Create volume state store with optimistic updates and throttle" },
     { "done": true, "step": "Implement sinks screen with sliders and sink-input nesting" }
     { "done": true, "step": "Implement sources screen with sliders and monitor filter" }
-    { "done": false, "step": "Implement move sink-input between sinks interaction" },
+    { "done": true, "step": "Implement move sink-input between sinks interaction" }
     { "done": false, "step": "Add config storage (hostname/port/endpoint, volume limits, show monitors)" },
     { "done": false, "step": "Add server info view using build metadata" },
     { "done": false, "step": "Handle loading, error, and empty states" },
