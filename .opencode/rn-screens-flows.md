@@ -1,0 +1,25 @@
+# React Native screens and flows (pulse-remote)
+
+- **Sinks (landing)**
+  - List sinks with volume/mute controls.
+  - Show nested sink inputs under each sink with volume/mute; allow move between sinks (drag/drop or action menu).
+  - Optimistic volume/mute updates with throttled send; reflects websocket status.
+  - Haptics on interactions.
+- **Sources**
+  - List sources with volume/mute controls.
+  - Respect config to hide monitored sources.
+  - Optimistic + throttled updates; websocket status consumption.
+- **Config**
+  - Editable hostname, port, endpoint; derived `ws://host:port/endpoint` display.
+  - Volume thresholds: min/max/step.
+  - Toggle: show monitored sources.
+  - Actions: reset to defaults; auto-detect host/port from device context.
+  - Persist locally (no auth).
+- **About / Server Info**
+  - Display build info from status: version, commit, platform, build date, Go version, compiler.
+  - Basic app info and links (if desired).
+- **Nav**
+  - Bottom tab or top tab across Sinks, Sources, Config, About; default to Sinks.
+- **States**
+  - Loading/error placeholder while connecting.
+  - Empty states when no sinks/sources/sink inputs.
