@@ -7,7 +7,9 @@
       "config/generated/*": ["config/generated/*"],
       "config/*": ["config/*"],
       "ws/*": ["ws/*"],
-      "state/*": ["state/*"]
+      "state/*": ["state/*"],
+      "screens/*": ["screens/*"],
+      "components/*": ["components/*"]
     }
   },
   "include": ["./src/**/*", "./App.tsx", "./index.ts"]

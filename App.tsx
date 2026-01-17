@@ -2,10 +2,10 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { StatusBar } from 'expo-status-bar'
 import { useColorScheme } from 'react-native'
-import { SinksScreen } from './src/screens/Sinks'
-import { SourcesScreen } from './src/screens/Sources'
-import { ConfigScreen } from './src/screens/Config'
-import { AboutScreen } from './src/screens/About'
+import { SinksScreen } from 'screens/Sinks'
+import { SourcesScreen } from 'screens/Sources'
+import { ConfigScreen } from 'screens/Config'
+import { AboutScreen } from 'screens/About'
 
 const Tab = createBottomTabNavigator()
 
