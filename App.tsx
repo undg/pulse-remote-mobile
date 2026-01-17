@@ -1,40 +1,11 @@
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { StatusBar } from 'expo-status-bar'
-import { useColorScheme, View, Text } from 'react-native'
-
-// TODO: replace placeholders with real screens
-function SinksScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Sinks</Text>
-    </View>
-  )
-}
-
-function SourcesScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Sources</Text>
-    </View>
-  )
-}
-
-function ConfigScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Config</Text>
-    </View>
-  )
-}
-
-function AboutScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>About</Text>
-    </View>
-  )
-}
+import { useColorScheme } from 'react-native'
+import { SinksScreen } from './src/screens/Sinks'
+import { SourcesScreen } from './src/screens/Sources'
+import { ConfigScreen } from './src/screens/Config'
+import { AboutScreen } from './src/screens/About'
 
 const Tab = createBottomTabNavigator()
 

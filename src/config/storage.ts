@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState, useCallback } from 'react'
 
 const DEFAULTS = {
@@ -51,10 +52,12 @@ async function saveConfig(config: Config) {
 export function useConfig() {
   const [config, setConfig] = useState<Config>({ ...DEFAULTS, serverUrl: deriveServerUrl(DEFAULTS.hostname, DEFAULTS.port, DEFAULTS.endpoint) })
   const [loading, setLoading] = useState(true)
+  const [serverUrl, setServerUrl] = useState(config.serverUrl)
 
   useEffect(() => {
     loadConfig().then(value => {
       setConfig(value)
+      setServerUrl(value.serverUrl)
       setLoading(false)
     })
   }, [])
@@ -68,19 +71,21 @@ export function useConfig() {
       const maxVolume = partial.maxVolume ?? prev.maxVolume
       const stepVolume = partial.stepVolume ?? prev.stepVolume
       const showMonitoredSources = partial.showMonitoredSources ?? prev.showMonitoredSources
-      const serverUrl = deriveServerUrl(hostname, port, endpoint)
-      const next = { hostname, port, endpoint, minVolume, maxVolume, stepVolume, showMonitoredSources, serverUrl }
+      const nextServerUrl = deriveServerUrl(hostname, port, endpoint)
+      setServerUrl(nextServerUrl)
+      const next = { hostname, port, endpoint, minVolume, maxVolume, stepVolume, showMonitoredSources, serverUrl: nextServerUrl }
       saveConfig(next)
       return next
     })
   }, [])
 
   const resetConfig = useCallback(() => {
-    const serverUrl = deriveServerUrl(DEFAULTS.hostname, DEFAULTS.port, DEFAULTS.endpoint)
-    const next = { ...DEFAULTS, serverUrl }
+    const nextServerUrl = deriveServerUrl(DEFAULTS.hostname, DEFAULTS.port, DEFAULTS.endpoint)
+    const next = { ...DEFAULTS, serverUrl: nextServerUrl }
     setConfig(next)
+    setServerUrl(nextServerUrl)
     saveConfig(next)
   }, [])
 
-  return { config, loading, updateConfig, resetConfig }
+  return { config, serverUrl, loading, updateConfig, resetConfig }
 }
