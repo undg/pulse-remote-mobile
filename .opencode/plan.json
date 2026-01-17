@@ -9,7 +9,7 @@
     { "done": true, "step": "Set up RN navigation landing on sinks list" },
     { "done": true, "step": "Build websocket client with auto-reconnect and JSON send" },
     { "done": true, "step": "Create volume state store with optimistic updates and throttle" },
-    { "done": false, "step": "Implement sinks screen with sliders and sink-input nesting" },
+    { "done": true, "step": "Implement sinks screen with sliders and sink-input nesting" }
     { "done": false, "step": "Implement sources screen with sliders and monitor filter" },
     { "done": false, "step": "Implement move sink-input between sinks interaction" },
     { "done": false, "step": "Add config storage (hostname/port/endpoint, volume limits, show monitors)" },
