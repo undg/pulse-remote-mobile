@@ -14,7 +14,7 @@
     { "done": true, "step": "Implement move sink-input between sinks interaction" }
     { "done": true, "step": "Add config storage (hostname/port/endpoint, volume limits, show monitors)" }
     { "done": true, "step": "Add server info view using build metadata" }
-    { "done": false, "step": "Handle loading, error, and empty states" },
+    { "done": true, "step": "Handle loading, error, and empty states" }
     { "done": false, "step": "Add basic theming and reusable UI primitives" },
     { "done": false, "step": "Test flows against pulse-remote server (LAN)" },
     { "done": false, "step": "Verify feature parity with web and note gaps" }
