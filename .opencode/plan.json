@@ -17,6 +17,6 @@
     { "done": true, "step": "Handle loading, error, and empty states" }
     { "done": true, "step": "Add basic theming and reusable UI primitives" }
     { "done": true, "step": "Test flows against pulse-remote server (LAN)" }
-    { "done": false, "step": "Verify feature parity with web and note gaps" }
+    { "done": true, "step": "Verify feature parity with web and note gaps" }
   ]
 }
