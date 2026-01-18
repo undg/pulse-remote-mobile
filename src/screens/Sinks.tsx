@@ -4,9 +4,11 @@ import { VolumeSlider } from 'components/VolumeSlider'
 import { LoadingOrError } from 'components/LoadingOrError'
 import { useConfig } from 'config/storage'
 import { useVolumeStore } from 'state/volume'
+import { useTheme } from '../theme'
 
 export function SinksScreen() {
   const { config, serverUrl, loading, hasUrl } = useConfig()
+  const { colors } = useTheme()
   const { sinks, sinkInputs, setSinkVolume, toggleSinkMuted, setSinkInputVolume, toggleSinkInputMuted, moveSinkInput, wsStatus, reconnect } = useVolumeStore(serverUrl)
 
   const data = useMemo(() => sinks ?? [], [sinks])
@@ -65,19 +67,19 @@ export function SinksScreen() {
             onChange={v => setSinkInputVolume(child.id, Math.round(v))}
             onCommit={v => setSinkInputVolume(child.id, Math.round(v))}
           />
-          <Pressable style={styles.moveButton} onPress={() => moveSinkInputPrompt(child.id, sinkId)}>
-            <Text style={styles.moveText}>Move input</Text>
+          <Pressable style={[styles.moveButton, { backgroundColor: colors.buttonSecondary }]} onPress={() => moveSinkInputPrompt(child.id, sinkId)}>
+            <Text style={[styles.moveText, { color: colors.buttonSecondaryText }]}>Move input</Text>
           </Pressable>
         </View>
       ),
-    [config.maxVolume, config.minVolume, config.stepVolume, moveSinkInputPrompt, setSinkInputVolume, toggleSinkInputMuted],
+    [colors.buttonSecondary, colors.buttonSecondaryText, config.maxVolume, config.minVolume, config.stepVolume, moveSinkInputPrompt, setSinkInputVolume, toggleSinkInputMuted],
   )
 
   const renderSink = useCallback(
     ({ item }: { item: { id: number; name: string; label: string; volume: number; muted: boolean } }) => {
       const children = sinkInputs?.filter(si => si.sinkId === item.id) ?? []
       return (
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.surface }]}>
           <VolumeSlider
             label={item.label}
             volume={item.volume}
@@ -90,7 +92,7 @@ export function SinksScreen() {
             onCommit={v => setSinkVolume(item.name, Math.round(v))}
           >
             {children.length === 0 ? (
-              <Text style={styles.emptyChild}>No inputs attached</Text>
+              <Text style={[styles.emptyChild, { color: colors.muted }]}>No inputs attached</Text>
             ) : (
               children.map(renderSinkInput(item.id))
             )}
@@ -98,7 +100,7 @@ export function SinksScreen() {
         </View>
       )
     },
-    [config.maxVolume, config.minVolume, config.stepVolume, renderSinkInput, setSinkVolume, sinkInputs, toggleSinkMuted],
+    [colors.muted, colors.surface, config.maxVolume, config.minVolume, config.stepVolume, renderSinkInput, setSinkVolume, sinkInputs, toggleSinkMuted],
   )
 
   if (loading) {
@@ -119,7 +121,7 @@ export function SinksScreen() {
 
   return (
     <FlatList
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, { backgroundColor: colors.background }]}
       data={data}
       keyExtractor={item => String(item.id)}
       renderItem={renderSink}

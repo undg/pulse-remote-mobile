@@ -10,7 +10,7 @@
     { "done": true, "step": "Build sources screen UI per sources-screen-plan.md" },
     { "done": true, "step": "Add move sink-input UX per move-sink-input-plan.md" },
     { "done": true, "step": "Add loading/error/empty states per states-plan.md" },
-    { "done": false, "step": "Add theming + primitives per theming-ui-plan.md" },
+    { "done": true, "step": "Add theming + primitives per theming-ui-plan.md" },
     { "done": false, "step": "Add drag-and-drop move UX (post-MVP) per move-sink-input-plan.md" },
     { "done": false, "step": "Add config screen UI per config-storage-plan.md" },
     { "done": false, "step": "Add about/server info screen per server-info-plan.md" },

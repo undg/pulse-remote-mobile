@@ -1,5 +1,6 @@
 import Slider from '@react-native-community/slider'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { useTheme } from '../theme'
 import type { GestureResponderEvent } from 'react-native'
 
 type Props = {
@@ -16,14 +17,16 @@ type Props = {
 }
 
 export function VolumeSlider(props: Props) {
+  const { colors } = useTheme()
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface }]}>
       <View style={styles.headerRow}>
-        <Pressable onPress={props.onToggleMute} style={[styles.muteButton, props.muted && styles.muted]}>
-          <Text style={styles.muteText}>{props.muted ? '🔇' : '🔊'}</Text>
+        <Pressable onPress={props.onToggleMute} style={[styles.muteButton, { backgroundColor: colors.surfaceMuted }, props.muted && { backgroundColor: colors.error }]}>
+          <Text style={[styles.muteText, { color: colors.text }]}>{props.muted ? '🔇' : '🔊'}</Text>
         </Pressable>
-        <Text style={styles.label}>{props.label}</Text>
-        <Text style={styles.value}>{props.volume}%</Text>
+        <Text style={[styles.label, { color: colors.text }]}>{props.label}</Text>
+        <Text style={[styles.value, { color: colors.text }]}>{props.volume}%</Text>
       </View>
       <Slider
         minimumValue={props.min}
@@ -32,9 +35,9 @@ export function VolumeSlider(props: Props) {
         value={props.volume}
         onValueChange={v => props.onChange?.(v)}
         onSlidingComplete={v => props.onCommit?.(Array.isArray(v) ? v[0] : v)}
-        minimumTrackTintColor='#22c55e'
-        maximumTrackTintColor='#ccc'
-        thumbTintColor='#22c55e'
+        minimumTrackTintColor={colors.sliderTrack}
+        maximumTrackTintColor={colors.border}
+        thumbTintColor={colors.primary}
       />
       {props.children}
     </View>
@@ -42,10 +45,9 @@ export function VolumeSlider(props: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 8 },
+  container: { gap: 8, padding: 12, borderRadius: 12 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  muteButton: { padding: 8, borderRadius: 8, backgroundColor: '#f1f5f9' },
-  muted: { backgroundColor: '#fecdd3' },
+  muteButton: { padding: 8, borderRadius: 8 },
   muteText: { fontSize: 16 },
   label: { flex: 1, fontWeight: '600' },
   value: { width: 50, textAlign: 'right' },

@@ -1,4 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { useTheme } from '../theme'
 import { useMemo } from 'react'
 import { LoadingOrError } from 'components/LoadingOrError'
 import { VolumeSlider } from 'components/VolumeSlider'
@@ -7,6 +8,7 @@ import { useVolumeStore } from 'state/volume'
 
 export function SourcesScreen() {
   const { config, serverUrl, loading, hasUrl } = useConfig()
+  const { colors } = useTheme()
   const { sources, setSourceVolume, toggleSourceMuted, wsStatus, reconnect } = useVolumeStore(serverUrl)
 
   const data = useMemo(() => {
@@ -32,11 +34,11 @@ export function SourcesScreen() {
 
   return (
     <FlatList
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, { backgroundColor: colors.background }]}
       data={data}
       keyExtractor={item => String(item.id)}
       renderItem={({ item }) => (
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.surface }]}>
           <VolumeSlider
             label={item.label}
             volume={item.volume}
@@ -48,12 +50,13 @@ export function SourcesScreen() {
             onChange={v => setSourceVolume(item.name, Math.round(v))}
             onCommit={v => setSourceVolume(item.name, Math.round(v))}
           />
-          {item.monitored && !config.showMonitoredSources ? <Text style={styles.mutedFlag}>Hidden monitored source</Text> : null}
+          {item.monitored && !config.showMonitoredSources ? <Text style={[styles.mutedFlag, { color: colors.muted }]}>Hidden monitored source</Text> : null}
         </View>
       )}
     />
   )
 }
+
 
 const styles = StyleSheet.create({
   list: { padding: 16, gap: 16 },

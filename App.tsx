@@ -1,7 +1,7 @@
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { StatusBar } from 'expo-status-bar'
-import { useColorScheme } from 'react-native'
+import { ThemeProvider, useTheme } from 'theme'
 import { SinksScreen } from 'screens/Sinks'
 import { SourcesScreen } from 'screens/Sources'
 import { ConfigScreen } from 'screens/Config'
@@ -9,11 +9,11 @@ import { AboutScreen } from 'screens/About'
 
 const Tab = createBottomTabNavigator()
 
-export default function App() {
-  const scheme = useColorScheme()
+function AppInner() {
+  const { navigationTheme } = useTheme()
 
   return (
-    <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <NavigationContainer theme={navigationTheme}>
       <StatusBar style='auto' />
       <Tab.Navigator initialRouteName='Sinks'>
         <Tab.Screen name='Sinks' component={SinksScreen} />
@@ -22,5 +22,13 @@ export default function App() {
         <Tab.Screen name='About' component={AboutScreen} />
       </Tab.Navigator>
     </NavigationContainer>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppInner />
+    </ThemeProvider>
   )
 }

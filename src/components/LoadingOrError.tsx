@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-native'
+import { useTheme } from '../theme'
 
 type Props = {
   loading?: boolean
@@ -7,22 +8,24 @@ type Props = {
 }
 
 export function LoadingOrError({ loading, error, onRetry }: Props) {
+  const { colors } = useTheme()
+
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size='large' />
-        <Text style={styles.text}>Loading...</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size='large' color={colors.primary} />
+        <Text style={[styles.text, { color: colors.text }]}>Loading...</Text>
       </View>
     )
   }
 
   if (error) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.text}>{error}</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={[styles.text, { color: colors.text }]}>{error}</Text>
         {onRetry && (
-          <Pressable style={styles.button} onPress={onRetry}>
-            <Text style={styles.buttonText}>Retry</Text>
+          <Pressable style={[styles.button, { backgroundColor: colors.buttonPrimary }]} onPress={onRetry}>
+            <Text style={[styles.buttonText, { color: colors.buttonPrimaryText }]}>Retry</Text>
           </Pressable>
         )}
       </View>
@@ -35,6 +38,7 @@ export function LoadingOrError({ loading, error, onRetry }: Props) {
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   text: { fontSize: 16 },
-  button: { paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#111827', borderRadius: 8 },
-  buttonText: { color: 'white', fontWeight: '600' },
+  button: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8 },
+  buttonText: { fontWeight: '600' },
 })
+
