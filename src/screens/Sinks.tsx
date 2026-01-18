@@ -1,4 +1,4 @@
-import { FlatList, View, Text, StyleSheet, Pressable, Alert } from 'react-native'
+import { FlatList, View, Text, StyleSheet, Pressable, Alert, ActionSheetIOS, Platform } from 'react-native'
 import { useMemo, useCallback } from 'react'
 import { VolumeSlider } from 'components/VolumeSlider'
 import { LoadingOrError } from 'components/LoadingOrError'
@@ -15,13 +15,33 @@ export function SinksScreen() {
     (inputId: number, currentSinkId: number) => {
       const targets = data.filter(s => s.id !== currentSinkId)
       if (!targets.length) return
+
+      const moveToIndex = (index: number) => {
+        const target = targets[index]
+        if (target) moveSinkInput(target.name, inputId)
+      }
+
+      if (Platform.OS === 'ios') {
+        ActionSheetIOS.showActionSheetWithOptions(
+          {
+            title: 'Move sink input',
+            options: [...targets.map(t => t.label ?? t.name), 'Cancel'],
+            cancelButtonIndex: targets.length,
+          },
+          buttonIndex => {
+            if (buttonIndex < targets.length) moveToIndex(buttonIndex)
+          },
+        )
+        return
+      }
+
       Alert.alert(
         'Move sink input',
         'Choose destination sink',
         [
-          ...targets.map(target => ({
+          ...targets.map((target, index) => ({
             text: target.label ?? target.name,
-            onPress: () => moveSinkInput(target.name, inputId),
+            onPress: () => moveToIndex(index),
           })),
           { text: 'Cancel', style: 'cancel' },
         ],
