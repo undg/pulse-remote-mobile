@@ -1,12 +1,13 @@
-import { FlatList, View, Text, StyleSheet } from 'react-native'
+import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { useMemo } from 'react'
+import { LoadingOrError } from 'components/LoadingOrError'
 import { VolumeSlider } from 'components/VolumeSlider'
 import { useConfig } from 'config/storage'
 import { useVolumeStore } from 'state/volume'
 
 export function SourcesScreen() {
   const { config, serverUrl, loading, hasUrl } = useConfig()
-  const { sources, setSourceVolume, toggleSourceMuted } = useVolumeStore(serverUrl)
+  const { sources, setSourceVolume, toggleSourceMuted, wsStatus, reconnect } = useVolumeStore(serverUrl)
 
   const data = useMemo(() => {
     const filtered = (sources ?? []).filter(src => (config.showMonitoredSources ? true : !src.monitored))
@@ -14,27 +15,19 @@ export function SourcesScreen() {
   }, [sources, config.showMonitoredSources])
 
   if (loading) {
-    return (
-      <View style={styles.center}>
-        <Text>Loading config...</Text>
-      </View>
-    )
+    return <LoadingOrError loading />
   }
 
   if (!hasUrl || !serverUrl) {
-    return (
-      <View style={styles.center}>
-        <Text>Please set a hostname in Config to connect.</Text>
-      </View>
-    )
+    return <LoadingOrError error='Please set a hostname in Config to connect.' />
+  }
+
+  if (wsStatus === 'Closed' || wsStatus === 'Closing') {
+    return <LoadingOrError error='Connection lost' onRetry={reconnect} />
   }
 
   if (!data.length) {
-    return (
-      <View style={styles.center}>
-        <Text>No sources found.</Text>
-      </View>
-    )
+    return <LoadingOrError error='No sources found.' />
   }
 
   return (
@@ -55,6 +48,7 @@ export function SourcesScreen() {
             onChange={v => setSourceVolume(item.name, Math.round(v))}
             onCommit={v => setSourceVolume(item.name, Math.round(v))}
           />
+          {item.monitored && !config.showMonitoredSources ? <Text style={styles.mutedFlag}>Hidden monitored source</Text> : null}
         </View>
       )}
     />
@@ -64,5 +58,5 @@ export function SourcesScreen() {
 const styles = StyleSheet.create({
   list: { padding: 16, gap: 16 },
   card: { padding: 12, borderRadius: 12, backgroundColor: '#f8fafc', gap: 12 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  mutedFlag: { fontSize: 12, color: '#6b7280' },
 })

@@ -7,7 +7,7 @@
     { "done": true, "step": "Create config store (AsyncStorage) per config-storage-plan.md" },
     { "done": true, "step": "Implement volume store with optimistic/throttle per volume-store-plan.md" },
     { "done": true, "step": "Build sinks screen UI per sinks-screen-plan.md" },
-    { "done": false, "step": "Build sources screen UI per sources-screen-plan.md" },
+    { "done": true, "step": "Build sources screen UI per sources-screen-plan.md" },
     { "done": true, "step": "Add move sink-input UX per move-sink-input-plan.md" },
     { "done": true, "step": "Add loading/error/empty states per states-plan.md" },
     { "done": false, "step": "Add theming + primitives per theming-ui-plan.md" },
