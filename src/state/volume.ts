@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { useWebSocketClient } from 'ws/client'
 import { Action } from 'config/generated/message'
+import type { OutgoingMessage } from 'config/generated/message'
 import type { PrapiStatus, Sink, SinkInput, Source } from 'config/generated/status'
 
 // simple throttle helper
@@ -45,6 +46,7 @@ export const THROTTLE_TIME = 100
 
 export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
   const { status: wsStatus, lastJson, send, reconnect, close } = useWebSocketClient({ url, enabled: Boolean(url) })
+  const lastStatusPayload = useRef<PrapiStatus | null>(null)
   const [state, setState] = useState<VolumeState>({ status: null, blocked: false })
   const stateRef = useRef<VolumeState>({ status: null, blocked: false })
   const blockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -57,10 +59,11 @@ export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
 
   // apply incoming status
   useEffect(() => {
-    if (lastJson && typeof lastJson === 'object' && lastJson.action === 'GetStatus' && lastJson.payload) {
+    if (lastJson && typeof lastJson === 'object' && lastJson.action === Action.GetStatus && lastJson.payload) {
+      lastStatusPayload.current = lastJson.payload as PrapiStatus
       setState(prev => {
         if (prev.blocked) return prev
-        const next: VolumeState = { ...prev, status: lastJson.payload as PrapiStatus }
+        const next: VolumeState = { ...prev, status: lastStatusPayload.current }
         stateRef.current = next
         return next
       })
@@ -94,7 +97,7 @@ export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
   )
 
   // throttled send wrappers
-  const sendThrottled = useMemo(() => throttle((message: unknown) => send(message), throttleMs), [send, throttleMs])
+  const sendThrottled = useMemo(() => throttle((message: OutgoingMessage | string) => send(message), throttleMs), [send, throttleMs])
 
   const setSinkVolume = useCallback(
     (name: string, volume: number) => {

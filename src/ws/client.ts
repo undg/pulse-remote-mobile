@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import type { IncomingMessage, OutgoingMessage } from 'config/generated/message'
 
 export type WsStatus = 'Connecting' | 'Open' | 'Closing' | 'Closed'
 
@@ -12,8 +13,8 @@ export type WsClientOptions = {
 export type WsClient = {
   status: WsStatus
   lastMessage?: MessageEvent<any>
-  lastJson?: any
-  send: (data: any) => void
+  lastJson?: IncomingMessage
+  send: (data: OutgoingMessage | string) => void
   reconnect: () => void
   close: () => void
 }
@@ -23,7 +24,7 @@ const defaultBackoff = [1000, 2000, 5000]
 export function useWebSocketClient({ url, reconnect = true, reconnectIntervalsMs = defaultBackoff, enabled = true }: WsClientOptions): WsClient {
   const [status, setStatus] = useState<WsStatus>('Connecting')
   const [lastMessage, setLastMessage] = useState<MessageEvent<any> | undefined>(undefined)
-  const [lastJson, setLastJson] = useState<any>(undefined)
+  const [lastJson, setLastJson] = useState<IncomingMessage | undefined>(undefined)
   const socketRef = useRef<WebSocket | null>(null)
   const retryIndexRef = useRef(0)
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -88,7 +89,7 @@ export function useWebSocketClient({ url, reconnect = true, reconnectIntervalsMs
     [cleanup, reconnect, reconnectIntervalsMs],
   )
 
-  const send = useCallback((data: any) => {
+  const send = useCallback((data: OutgoingMessage | string) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       const payload = typeof data === 'string' ? data : JSON.stringify(data)
       socketRef.current.send(payload)
