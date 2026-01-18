@@ -2,6 +2,8 @@
 
 Scope: applies to all files in `/home/undg/Code/pulse-remote-mobile` unless a deeper AGENTS.md is added later.
 
+Line 0: .opencode/plan.json have list of steps to implement.
+Line 0-1: when step is complete, mark is as done and provide summary for the user that he can use as a commit message.
 Line 1: Use this file as the canonical guide for agent work in this repo.
 Line 2: No other AGENTS.md files exist yet.
 Line 3: No Cursor rules found (.cursor/rules, .cursorrules missing).
