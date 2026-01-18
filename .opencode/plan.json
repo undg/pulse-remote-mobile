@@ -13,7 +13,7 @@
     { "done": true, "step": "Add theming + primitives per theming-ui-plan.md" },
     { "done": true, "step": "Add about/server info screen per server-info-plan.md" },
     { "done": true, "step": "Wire websocket actions/types per websocket-actions-and-types.md" },
-    { "done": false, "step": "Ensure status shape handling per status-shape.md" },
+    { "done": true, "step": "Ensure status shape handling per status-shape.md" },
     { "done": false, "step": "Test flows on LAN per testing-plan.md" },
     { "done": false, "step": "Parity check vs web per parity-plan.md" },
 	{ "done": false, "step": "Add drag-and-drop move UX (post-MVP) per move-sink-input-plan.md" }

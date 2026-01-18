@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { useWebSocketClient } from 'ws/client'
 import { Action } from 'config/generated/message'
 import type { OutgoingMessage } from 'config/messageTypes'
-import type { PrapiStatus, Sink, SinkInput, Source } from 'config/generated/status'
+import type { BuildInfo, PrapiStatus, Sink, SinkInput, Source } from 'config/generated/status'
 
 // simple throttle helper
 function throttle<T extends (...args: any[]) => void>(fn: T, delay: number) {
@@ -31,6 +31,30 @@ export type VolumeState = {
   blocked: boolean
 }
 
+function isBuildInfo(payload: unknown): payload is BuildInfo {
+  if (!payload || typeof payload !== 'object') return false
+  const candidate = payload as Partial<BuildInfo>
+  return (
+    typeof candidate.buildDate === 'string' &&
+    typeof candidate.compiler === 'string' &&
+    typeof candidate.gitCommit === 'string' &&
+    typeof candidate.gitVersion === 'string' &&
+    typeof candidate.goVersion === 'string' &&
+    typeof candidate.platform === 'string'
+  )
+}
+
+function normalizeStatus(payload: unknown, previous: PrapiStatus | null): PrapiStatus | null {
+  if (!payload || typeof payload !== 'object') return null
+  const candidate = payload as Partial<PrapiStatus> & { buildInfo?: unknown }
+  const buildInfo = isBuildInfo(candidate.buildInfo) ? candidate.buildInfo : previous?.buildInfo
+  if (!buildInfo) return null
+  const sinks = Array.isArray(candidate.sinks) ? candidate.sinks : previous?.sinks ?? []
+  const sinkInputs = Array.isArray(candidate.sinkInputs) ? candidate.sinkInputs : previous?.sinkInputs ?? []
+  const sources = Array.isArray(candidate.sources) ? candidate.sources : previous?.sources ?? []
+  return { buildInfo, sinks, sinkInputs, sources }
+}
+
 export type VolumeActions = {
   setSinkVolume: (name: string, volume: number) => void
   toggleSinkMuted: (name: string) => void
@@ -46,29 +70,34 @@ export const THROTTLE_TIME = 100
 
 export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
   const { status: wsStatus, lastJson, send, reconnect, close } = useWebSocketClient({ url, enabled: Boolean(url) })
-  const lastStatusPayload = useRef<PrapiStatus | null>(null)
   const [state, setState] = useState<VolumeState>({ status: null, blocked: false })
   const stateRef = useRef<VolumeState>({ status: null, blocked: false })
   const blockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastStatusPayload = useRef<PrapiStatus | null>(null)
 
-  useEffect(() => {
-    const next: VolumeState = { status: null, blocked: false }
-    setState(next)
-    stateRef.current = next
-  }, [url])
+	useEffect(() => {
+		const next: VolumeState = { status: null, blocked: false }
+		setState(next)
+		stateRef.current = next
+		lastStatusPayload.current = null
+	}, [url])
 
-  // apply incoming status
-  useEffect(() => {
-    if (lastJson && typeof lastJson === 'object' && lastJson.action === Action.GetStatus && lastJson.payload) {
-      lastStatusPayload.current = lastJson.payload as PrapiStatus
-      setState(prev => {
-        if (prev.blocked) return prev
-        const next: VolumeState = { ...prev, status: lastStatusPayload.current }
-        stateRef.current = next
-        return next
-      })
-    }
-  }, [lastJson])
+	// apply incoming status
+	useEffect(() => {
+		if (lastJson && typeof lastJson === 'object' && lastJson.action === Action.GetStatus) {
+			const normalized = normalizeStatus(lastJson.payload, lastStatusPayload.current ?? stateRef.current.status)
+			if (normalized) {
+				lastStatusPayload.current = normalized
+				setState(prev => {
+					if (prev.blocked) return prev
+					const next: VolumeState = { ...prev, status: normalized }
+					stateRef.current = next
+					return next
+				})
+			}
+		}
+	}, [lastJson])
+
 
   const unblockLater = useCallback(() => {
     if (blockTimerRef.current) clearTimeout(blockTimerRef.current)
