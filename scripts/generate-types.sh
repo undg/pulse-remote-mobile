@@ -37,6 +37,23 @@ generate_types() {
   npx --yes quicktype -s schema "$input" -o "$output" --just-types --top-level "$top"
 }
 
+retab_file() {
+  local file="$1"
+  python - "$file" <<'PY'
+import sys
+from pathlib import Path
+path = Path(sys.argv[1])
+text = path.read_text()
+lines = []
+for line in text.splitlines():
+    stripped = line.lstrip(' ')
+    leading = len(line) - len(stripped)
+    tabs, spaces = divmod(leading, 4)
+    lines.append('\t' * tabs + ' ' * spaces + stripped)
+path.write_text('\n'.join(lines) + ('\n' if text.endswith('\n') else ''))
+PY
+}
+
 main() {
   require_cmd curl
   require_cmd jq
@@ -49,6 +66,10 @@ main() {
   generate_types "$STATUS_TMP" "src/config/generated/status.ts" "PrapiStatus" "status"
   generate_types "$MESSAGE_TMP" "src/config/generated/message.ts" "PrapiMessage" "message"
   generate_types "$RESPONSE_TMP" "src/config/generated/response.ts" "PrapiResponse" "response"
+
+  retab_file "src/config/generated/status.ts"
+  retab_file "src/config/generated/message.ts"
+  retab_file "src/config/generated/response.ts"
 
   log "done"
 }

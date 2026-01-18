@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { useWebSocketClient } from 'ws/client'
 import { Action } from 'config/generated/message'
-import type { OutgoingMessage } from 'config/generated/message'
+import type { OutgoingMessage } from 'config/messageTypes'
 import type { PrapiStatus, Sink, SinkInput, Source } from 'config/generated/status'
 
 // simple throttle helper

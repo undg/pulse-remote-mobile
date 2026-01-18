@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import type { IncomingMessage, OutgoingMessage } from 'config/generated/message'
+import type { IncomingMessage, OutgoingMessage } from 'config/messageTypes'
 
 export type WsStatus = 'Connecting' | 'Open' | 'Closing' | 'Closed'
 

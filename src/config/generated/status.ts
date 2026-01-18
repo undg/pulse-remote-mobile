@@ -1,41 +1,125 @@
-export type PrapiStatus = {
-  buildInfo: BuildInfo
-  sinkInputs: SinkInput[]
-  sinks: Sink[]
-  sources: Source[]
+export interface PrapiStatus {
+	/**
+	 * Build information
+	 */
+	buildInfo: BuildInfo;
+	/**
+	 * List of applications that are playing audio
+	 */
+	sinkInputs: SinkInput[];
+	/**
+	 * List of audio devices
+	 */
+	sinks: Sink[];
+	/**
+	 * List of microphones and other sources
+	 */
+	sources: Source[];
 }
 
-export type BuildInfo = {
-  buildDate: string
-  compiler: string
-  gitCommit: string
-  gitVersion: string
-  goVersion: string
-  platform: string
+/**
+ * Build information
+ */
+export interface BuildInfo {
+	/**
+	 * The date and time of the build in ISO8601 format
+	 */
+	buildDate: string;
+	/**
+	 * The compiler used for building
+	 */
+	compiler: string;
+	/**
+	 * The Git commit hash
+	 */
+	gitCommit: string;
+	/**
+	 * The version of the Git repository
+	 */
+	gitVersion: string;
+	/**
+	 * The version of Go used for compilation
+	 */
+	goVersion: string;
+	/**
+	 * The operating system and architecture
+	 */
+	platform: string;
 }
 
-export type SinkInput = {
-  id: number
-  label: string
-  muted: boolean
-  sinkId: number
-  volume: number
+export interface SinkInput {
+	/**
+	 * The id of the sink. Same  as name
+	 */
+	id: number;
+	/**
+	 * Human-readable label for the sink
+	 */
+	label: string;
+	/**
+	 * Whether the sink is muted
+	 */
+	muted: boolean;
+	/**
+	 * Id of parrent device, same as sink.id
+	 */
+	sinkId: number;
+	/**
+	 * Current volume level of the sink
+	 */
+	volume: number;
 }
 
-export type Sink = {
-  id: number
-  label: string
-  muted: boolean
-  name: string
-  volume: number
+export interface Sink {
+	/**
+	 * The id of the sink. Same  as name
+	 */
+	id: number;
+	/**
+	 * Human-readable label for the sink
+	 */
+	label: string;
+	/**
+	 * Whether the sink is muted
+	 */
+	muted: boolean;
+	/**
+	 * The name of the sink. Same as id
+	 */
+	name: string;
+	/**
+	 * Current volume level of the sink
+	 */
+	volume: number;
 }
 
-export type Source = {
-  id: number
-  label: string
-  monitor: string
-  monitored: boolean
-  muted: boolean
-  name: string
-  volume: number
+export interface Source {
+	/**
+	 * Unique numeric identifier of the source
+	 */
+	id: number;
+	/**
+	 * Human-readable label for the source
+	 */
+	label: string;
+	/**
+	 * Name of monitor source
+	 */
+	monitor: string;
+	/**
+	 * Whether source is being monitored
+	 */
+	monitored: boolean;
+	/**
+	 * Whether the source is muted
+	 */
+	muted: boolean;
+	/**
+	 * Unique string identifier of the source
+	 */
+	name: string;
+	/**
+	 * Current volume level of the source
+	 */
+	volume: number;
 }
