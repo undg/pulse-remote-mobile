@@ -44,7 +44,7 @@ export const RELEASE_OPTIMISTIC_TIME = 150
 export const THROTTLE_TIME = 100
 
 export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
-  const { status: wsStatus, lastJson, send } = useWebSocketClient({ url, enabled: Boolean(url) })
+  const { status: wsStatus, lastJson, send, reconnect, close } = useWebSocketClient({ url, enabled: Boolean(url) })
   const [state, setState] = useState<VolumeState>({ status: null, blocked: false })
   const stateRef = useRef<VolumeState>({ status: null, blocked: false })
   const blockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -198,5 +198,5 @@ export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
     return { sinks, sinkInputs, sources, buildInfo }
   }, [state.status])
 
-  return { ...state, ...derived, wsStatus, ...actions }
+  return { ...state, ...derived, wsStatus, reconnect, close, ...actions }
 }
