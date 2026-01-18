@@ -49,6 +49,12 @@ export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
   const stateRef = useRef<VolumeState>({ status: null, blocked: false })
   const blockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  useEffect(() => {
+    const next: VolumeState = { status: null, blocked: false }
+    setState(next)
+    stateRef.current = next
+  }, [url])
+
   // apply incoming status
   useEffect(() => {
     if (lastJson && typeof lastJson === 'object' && lastJson.action === 'GetStatus' && lastJson.payload) {

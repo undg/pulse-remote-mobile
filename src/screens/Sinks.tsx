@@ -30,6 +30,14 @@ export function SinksScreen() {
     )
   }
 
+  if (!data.length) {
+    return (
+      <View style={styles.center}>
+        <Text>No sinks found.</Text>
+      </View>
+    )
+  }
+
   return (
     <FlatList
       contentContainerStyle={styles.list}
