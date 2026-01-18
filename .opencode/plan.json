@@ -11,7 +11,7 @@
     { "done": true, "step": "Add move sink-input UX per move-sink-input-plan.md" },
     { "done": true, "step": "Add loading/error/empty states per states-plan.md" },
     { "done": true, "step": "Add theming + primitives per theming-ui-plan.md" },
-    { "done": false, "step": "Add about/server info screen per server-info-plan.md" },
+    { "done": true, "step": "Add about/server info screen per server-info-plan.md" },
     { "done": false, "step": "Wire websocket actions/types per websocket-actions-and-types.md" },
     { "done": false, "step": "Ensure status shape handling per status-shape.md" },
     { "done": false, "step": "Test flows on LAN per testing-plan.md" },
