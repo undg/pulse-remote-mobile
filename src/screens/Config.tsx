@@ -59,7 +59,7 @@ export function ConfigScreen() {
 
   const handleReset = () => {
     resetConfig();
-    setHostname("192.168.1.244");
+    setHostname("192.168.1.93");
     setPort("8448");
     setEndpoint("/api/v1/ws");
     setMinVolume("0");
