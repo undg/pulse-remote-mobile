@@ -25,3 +25,9 @@ Future drag & drop spec (add after action-sheet MVP)
 - Logic: on drop, compute target sinkId; optimistically set `sinkInput.sinkId` to target; send `MoveSinkInput` with target sink name and input id; cancel drop keeps original sinkId.
 - Edge cases: prevent dropping onto same sink; handle disconnects (disable drag when wsStatus !== 'Open'); throttle multiple drops; ensure accessibility fallbacks (action sheet remains available).
 
+Checkboxed next steps
+- [ ] Choose drag/drop approach (library vs custom gestures) and confirm Expo compatibility
+- [ ] Refactor sink/sink-input rendering to support draggable inputs and droppable sink cards
+- [ ] Implement drag start/end, drop detection, optimistic move + `MoveSinkInput` send
+- [ ] Keep action-sheet fallback for accessibility and non-drag contexts; verify on iOS/Android
+
