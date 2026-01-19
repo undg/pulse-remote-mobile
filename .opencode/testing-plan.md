@@ -9,7 +9,7 @@ Unit tests (start here)
 - [x] Websocket client parses JSON, handles status transitions, backoff
 - [x] Volume store optimistic update/releases mirror actions (SetSinkVolume/mute/input)
 - [x] LoadingOrError renders loading, error, retry callback
-- [ ] About screen renders build info from status payload
+- [x] About screen renders build info from status payload
 
 Integration/UI smoke
 - [x] App tabs render and show initial empty state
