@@ -31,7 +31,7 @@ Line 18: Keep Metro running in project root.
 Line 19: No test scripts configured in package.json.
 Line 20: No test frameworks set up (Jest/RTL not present).
 Line 21: Running a single test is not applicable until a test runner is added.
-Line 22: If adding tests, prefer vitest + React Native Testing Library; wire scripts `test`, `test -- --watch`, and `test -- <pattern>` for single-test runs.
+Line 22: If adding tests, use Jest + React Native Testing Library; wire scripts `test`, `test -- --watch`, and `test -- <pattern>` for single-test runs.
 Line 23: Do not add tests unless required by task.
 
 ## Linting / Formatting
