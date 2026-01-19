@@ -2,21 +2,73 @@
   "title": "Port pulse-remote-web to React Native - build plan",
   "description": "Implementation roadmap with references to scoped notes under .opencode/*.md",
   "steps": [
-    { "done": true, "step": "Set up navigation tabs (Sinks initial) per rn-navigation-plan.md" },
-    { "done": true, "step": "Implement websocket client hook per ws-client-plan.md" },
-    { "done": true, "step": "Create config store (AsyncStorage) per config-storage-plan.md" },
-    { "done": true, "step": "Implement volume store with optimistic/throttle per volume-store-plan.md" },
-    { "done": true, "step": "Build sinks screen UI per sinks-screen-plan.md" },
-    { "done": true, "step": "Build sources screen UI per sources-screen-plan.md" },
-    { "done": true, "step": "Add move sink-input UX per move-sink-input-plan.md" },
-    { "done": true, "step": "Add loading/error/empty states per states-plan.md" },
-    { "done": true, "step": "Add theming + primitives per theming-ui-plan.md" },
-    { "done": true, "step": "Add about/server info screen per server-info-plan.md" },
-    { "done": true, "step": "Wire websocket actions/types per websocket-actions-and-types.md" },
-    { "done": true, "step": "Ensure status shape handling per status-shape.md" },
-    { "done": true, "step": "Test flows on LAN per testing-plan.md" },
-    { "done": true, "step": "Parity check vs web per parity-plan.md" },
-    { "done": false, "step": "Add drag-and-drop move UX (post-MVP) per move-sink-input-plan.md" },
-    { "done": false, "step": "Integrate UI models per testing-plan.md" }
+    {
+      "done": true,
+      "step": "Set up navigation tabs (Sinks initial) per rn-navigation-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Implement websocket client hook per ws-client-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Create config store (AsyncStorage) per config-storage-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Implement volume store with optimistic/throttle per volume-store-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Build sinks screen UI per sinks-screen-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Build sources screen UI per sources-screen-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Add move sink-input UX per move-sink-input-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Add loading/error/empty states per states-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Add theming + primitives per theming-ui-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Add about/server info screen per server-info-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Wire websocket actions/types per websocket-actions-and-types.md"
+    },
+    {
+      "done": true,
+      "step": "Ensure status shape handling per status-shape.md"
+    },
+    {
+      "done": true,
+      "step": "Test flows on LAN per testing-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Parity check vs web per parity-plan.md"
+    },
+    {
+      "done": true,
+      "step": "Add drag-and-drop move UX (post-MVP) per move-sink-input-plan.md"
+    },
+    {
+      "done": false,
+      "step": "Add drag/drop for sources (requires new BE move action)"
+    },
+    {
+      "done": false,
+      "step": "Integrate UI models per testing-plan.md"
+    }
   ]
 }
