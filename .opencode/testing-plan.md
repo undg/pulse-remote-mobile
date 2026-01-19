@@ -4,11 +4,11 @@ Scope
 - Validate main flows against a running pulse-remote server on LAN.
 
 Unit tests (start here)
-- [ ] Theme provider resolves system/light/dark and persists preference
+- [x] Theme provider resolves system/light/dark and persists preference
 - [ ] Config store loads defaults, saves overrides, derives ws URL
 - [ ] Websocket client parses JSON, handles status transitions, backoff
 - [ ] Volume store optimistic update/releases mirror actions (SetSinkVolume/mute/input)
-- [ ] LoadingOrError renders loading, error, retry callback
+- [x] LoadingOrError renders loading, error, retry callback
 - [ ] About screen renders build info from status payload
 
 Integration/UI smoke
