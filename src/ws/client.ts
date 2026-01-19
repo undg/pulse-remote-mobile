@@ -64,10 +64,12 @@ export function useWebSocketClient({
       currentUrlRef.current = targetUrl;
       cleanup();
       setStatus("Connecting");
+      console.warn("WS connect", targetUrl);
       const ws = new WebSocket(targetUrl);
       socketRef.current = ws;
 
       ws.onopen = () => {
+        console.warn("WS open", targetUrl);
         setStatus("Open");
         retryIndexRef.current = 0;
       };
@@ -82,11 +84,13 @@ export function useWebSocketClient({
         }
       };
 
-      ws.onerror = () => {
+      ws.onerror = (event) => {
+        console.warn("WS error", targetUrl, event?.type ?? "");
         setStatus("Closing");
       };
 
-      ws.onclose = () => {
+      ws.onclose = (event) => {
+        console.warn("WS close", targetUrl, event.code, event.reason);
         setStatus("Closed");
         if (reconnect) {
           const delay =
