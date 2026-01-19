@@ -5,7 +5,7 @@ Scope
 
 Unit tests (start here)
 - [x] Theme provider resolves system/light/dark and persists preference
-- [ ] Config store loads defaults, saves overrides, derives ws URL
+- [x] Config store loads defaults, saves overrides, derives ws URL
 - [ ] Websocket client parses JSON, handles status transitions, backoff
 - [ ] Volume store optimistic update/releases mirror actions (SetSinkVolume/mute/input)
 - [x] LoadingOrError renders loading, error, retry callback
