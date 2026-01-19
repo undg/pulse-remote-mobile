@@ -1,216 +1,284 @@
-import { useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { useWebSocketClient } from 'ws/client'
-import { Action } from 'config/generated/message'
-import type { OutgoingMessage } from 'config/messageTypes'
-import type { BuildInfo, PrapiStatus, Sink, SinkInput, Source } from 'config/generated/status'
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
+import { useWebSocketClient } from "ws/client";
+import { Action } from "config/generated/message";
+import type { OutgoingMessage } from "config/messageTypes";
+import type {
+  BuildInfo,
+  PrapiStatus,
+  Sink,
+  SinkInput,
+  Source,
+} from "config/generated/status";
 
 // simple throttle helper
 function throttle<T extends (...args: any[]) => void>(fn: T, delay: number) {
-  let last = 0
-  let timer: ReturnType<typeof setTimeout> | null = null
-  let lastArgs: any[] | null = null
+  let last = 0;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: any[] | null = null;
 
   return (...args: any[]) => {
-    const now = Date.now()
-    lastArgs = args
+    const now = Date.now();
+    lastArgs = args;
     if (now - last >= delay) {
-      last = now
-      fn(...args)
+      last = now;
+      fn(...args);
     } else if (!timer) {
-      timer = setTimeout(() => {
-        last = Date.now()
-        timer = null
-        if (lastArgs) fn(...(lastArgs as any[]))
-      }, delay - (now - last))
+      timer = setTimeout(
+        () => {
+          last = Date.now();
+          timer = null;
+          if (lastArgs) fn(...(lastArgs as any[]));
+        },
+        delay - (now - last),
+      );
     }
-  }
+  };
 }
 
 export type VolumeState = {
-  status: PrapiStatus | null
-  blocked: boolean
-}
+  status: PrapiStatus | null;
+  blocked: boolean;
+};
 
 function isBuildInfo(payload: unknown): payload is BuildInfo {
-  if (!payload || typeof payload !== 'object') return false
-  const candidate = payload as Partial<BuildInfo>
+  if (!payload || typeof payload !== "object") return false;
+  const candidate = payload as Partial<BuildInfo>;
   return (
-    typeof candidate.buildDate === 'string' &&
-    typeof candidate.compiler === 'string' &&
-    typeof candidate.gitCommit === 'string' &&
-    typeof candidate.gitVersion === 'string' &&
-    typeof candidate.goVersion === 'string' &&
-    typeof candidate.platform === 'string'
-  )
+    typeof candidate.buildDate === "string" &&
+    typeof candidate.compiler === "string" &&
+    typeof candidate.gitCommit === "string" &&
+    typeof candidate.gitVersion === "string" &&
+    typeof candidate.goVersion === "string" &&
+    typeof candidate.platform === "string"
+  );
 }
 
-function normalizeStatus(payload: unknown, previous: PrapiStatus | null): PrapiStatus | null {
-  if (!payload || typeof payload !== 'object') return null
-  const candidate = payload as Partial<PrapiStatus> & { buildInfo?: unknown }
-  const buildInfo = isBuildInfo(candidate.buildInfo) ? candidate.buildInfo : previous?.buildInfo
-  if (!buildInfo) return null
-  const sinks = Array.isArray(candidate.sinks) ? candidate.sinks : previous?.sinks ?? []
-  const sinkInputs = Array.isArray(candidate.sinkInputs) ? candidate.sinkInputs : previous?.sinkInputs ?? []
-  const sources = Array.isArray(candidate.sources) ? candidate.sources : previous?.sources ?? []
-  return { buildInfo, sinks, sinkInputs, sources }
+function normalizeStatus(
+  payload: unknown,
+  previous: PrapiStatus | null,
+): PrapiStatus | null {
+  if (!payload || typeof payload !== "object") return null;
+  const candidate = payload as Partial<PrapiStatus> & { buildInfo?: unknown };
+  const buildInfo = isBuildInfo(candidate.buildInfo)
+    ? candidate.buildInfo
+    : previous?.buildInfo;
+  if (!buildInfo) return null;
+  const sinks = Array.isArray(candidate.sinks)
+    ? candidate.sinks
+    : (previous?.sinks ?? []);
+  const sinkInputs = Array.isArray(candidate.sinkInputs)
+    ? candidate.sinkInputs
+    : (previous?.sinkInputs ?? []);
+  const sources = Array.isArray(candidate.sources)
+    ? candidate.sources
+    : (previous?.sources ?? []);
+  return { buildInfo, sinks, sinkInputs, sources };
 }
 
 export type VolumeActions = {
-  setSinkVolume: (name: string, volume: number) => void
-  toggleSinkMuted: (name: string) => void
-  setSinkInputVolume: (id: number, volume: number) => void
-  toggleSinkInputMuted: (id: number) => void
-  moveSinkInput: (name: string, id: number) => void
-  setSourceVolume: (name: string, volume: number) => void
-  toggleSourceMuted: (name: string) => void
-}
+  setSinkVolume: (name: string, volume: number) => void;
+  toggleSinkMuted: (name: string) => void;
+  setSinkInputVolume: (id: number, volume: number) => void;
+  toggleSinkInputMuted: (id: number) => void;
+  moveSinkInput: (name: string, id: number) => void;
+  setSourceVolume: (name: string, volume: number) => void;
+  toggleSourceMuted: (name: string) => void;
+};
 
-export const RELEASE_OPTIMISTIC_TIME = 150
-export const THROTTLE_TIME = 100
+export const RELEASE_OPTIMISTIC_TIME = 150;
+export const THROTTLE_TIME = 100;
 
 export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
-  const { status: wsStatus, lastJson, send, reconnect, close } = useWebSocketClient({ url, enabled: Boolean(url) })
-  const [state, setState] = useState<VolumeState>({ status: null, blocked: false })
-  const stateRef = useRef<VolumeState>({ status: null, blocked: false })
-  const blockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const lastStatusPayload = useRef<PrapiStatus | null>(null)
+  const {
+    status: wsStatus,
+    lastJson,
+    send,
+    reconnect,
+    close,
+  } = useWebSocketClient({ url, enabled: Boolean(url) });
+  const [state, setState] = useState<VolumeState>({
+    status: null,
+    blocked: false,
+  });
+  const stateRef = useRef<VolumeState>({ status: null, blocked: false });
+  const blockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastStatusPayload = useRef<PrapiStatus | null>(null);
 
-	useEffect(() => {
-		const next: VolumeState = { status: null, blocked: false }
-		setState(next)
-		stateRef.current = next
-		lastStatusPayload.current = null
-	}, [url])
+  useEffect(() => {
+    const next: VolumeState = { status: null, blocked: false };
+    setState(next);
+    stateRef.current = next;
+    lastStatusPayload.current = null;
+  }, [url]);
 
-	// apply incoming status
-	useEffect(() => {
-		if (lastJson && typeof lastJson === 'object' && lastJson.action === Action.GetStatus) {
-			const normalized = normalizeStatus(lastJson.payload, lastStatusPayload.current ?? stateRef.current.status)
-			if (normalized) {
-				lastStatusPayload.current = normalized
-				setState(prev => {
-					if (prev.blocked) return prev
-					const next: VolumeState = { ...prev, status: normalized }
-					stateRef.current = next
-					return next
-				})
-			}
-		}
-	}, [lastJson])
-
+  // apply incoming status
+  useEffect(() => {
+    if (
+      lastJson &&
+      typeof lastJson === "object" &&
+      lastJson.action === Action.GetStatus
+    ) {
+      const normalized = normalizeStatus(
+        lastJson.payload,
+        lastStatusPayload.current ?? stateRef.current.status,
+      );
+      if (normalized) {
+        lastStatusPayload.current = normalized;
+        setState((prev) => {
+          if (prev.blocked) return prev;
+          const next: VolumeState = { ...prev, status: normalized };
+          stateRef.current = next;
+          return next;
+        });
+      }
+    }
+  }, [lastJson]);
 
   const unblockLater = useCallback(() => {
-    if (blockTimerRef.current) clearTimeout(blockTimerRef.current)
+    if (blockTimerRef.current) clearTimeout(blockTimerRef.current);
     blockTimerRef.current = setTimeout(() => {
-      setState(prev => {
-        const next = { ...prev, blocked: false }
-        stateRef.current = next
-        return next
-      })
-    }, RELEASE_OPTIMISTIC_TIME)
-  }, [])
+      setState((prev) => {
+        const next = { ...prev, blocked: false };
+        stateRef.current = next;
+        return next;
+      });
+    }, RELEASE_OPTIMISTIC_TIME);
+  }, []);
 
   const optimistic = useCallback(
     (updater: (draft: PrapiStatus) => void) => {
-      setState(prev => {
-        if (!prev.status) return prev
-        const nextStatus: PrapiStatus = JSON.parse(JSON.stringify(prev.status)) as PrapiStatus
-        updater(nextStatus)
-        const next: VolumeState = { status: nextStatus, blocked: true }
-        stateRef.current = next
-        return next
-      })
-      unblockLater()
+      setState((prev) => {
+        if (!prev.status) return prev;
+        const nextStatus: PrapiStatus = JSON.parse(
+          JSON.stringify(prev.status),
+        ) as PrapiStatus;
+        updater(nextStatus);
+        const next: VolumeState = { status: nextStatus, blocked: true };
+        stateRef.current = next;
+        return next;
+      });
+      unblockLater();
     },
     [unblockLater],
-  )
+  );
 
   // throttled send wrappers
-  const sendThrottled = useMemo(() => throttle((message: OutgoingMessage | string) => send(message), throttleMs), [send, throttleMs])
+  const sendThrottled = useMemo(
+    () =>
+      throttle(
+        (message: OutgoingMessage | string) => send(message),
+        throttleMs,
+      ),
+    [send, throttleMs],
+  );
 
   const setSinkVolume = useCallback(
     (name: string, volume: number) => {
-      optimistic(draft => {
-        const sink = draft.sinks.find((s: Sink) => s.name === name)
-        if (sink) sink.volume = volume
-      })
-      sendThrottled({ action: Action.SetSinkVolume, payload: { name, volume } })
+      optimistic((draft) => {
+        const sink = draft.sinks.find((s: Sink) => s.name === name);
+        if (sink) sink.volume = volume;
+      });
+      sendThrottled({
+        action: Action.SetSinkVolume,
+        payload: { name, volume },
+      });
     },
     [optimistic, sendThrottled],
-  )
+  );
 
   const toggleSinkMuted = useCallback(
     (name: string) => {
-      const currentMuted = stateRef.current.status?.sinks.find((s: Sink) => s.name === name)?.muted ?? false
-      const nextMuted = !currentMuted
-      optimistic(draft => {
-        const sink = draft.sinks.find((s: Sink) => s.name === name)
-        if (sink) sink.muted = nextMuted
-      })
-      sendThrottled({ action: Action.SetSinkMuted, payload: { name, muted: nextMuted } })
+      const currentMuted =
+        stateRef.current.status?.sinks.find((s: Sink) => s.name === name)
+          ?.muted ?? false;
+      const nextMuted = !currentMuted;
+      optimistic((draft) => {
+        const sink = draft.sinks.find((s: Sink) => s.name === name);
+        if (sink) sink.muted = nextMuted;
+      });
+      sendThrottled({
+        action: Action.SetSinkMuted,
+        payload: { name, muted: nextMuted },
+      });
     },
     [optimistic, sendThrottled],
-  )
+  );
 
   const setSinkInputVolume = useCallback(
     (id: number, volume: number) => {
-      optimistic(draft => {
-        const si = draft.sinkInputs.find((s: SinkInput) => s.id === id)
-        if (si) si.volume = volume
-      })
-      sendThrottled({ action: Action.SetSinkInputVolume, payload: { id, volume } })
+      optimistic((draft) => {
+        const si = draft.sinkInputs.find((s: SinkInput) => s.id === id);
+        if (si) si.volume = volume;
+      });
+      sendThrottled({
+        action: Action.SetSinkInputVolume,
+        payload: { id, volume },
+      });
     },
     [optimistic, sendThrottled],
-  )
+  );
 
   const toggleSinkInputMuted = useCallback(
     (id: number) => {
-      const currentMuted = stateRef.current.status?.sinkInputs.find((s: SinkInput) => s.id === id)?.muted ?? false
-      const nextMuted = !currentMuted
-      optimistic(draft => {
-        const si = draft.sinkInputs.find((s: SinkInput) => s.id === id)
-        if (si) si.muted = nextMuted
-      })
-      sendThrottled({ action: Action.SetSinkInputMuted, payload: { id, muted: nextMuted } })
+      const currentMuted =
+        stateRef.current.status?.sinkInputs.find((s: SinkInput) => s.id === id)
+          ?.muted ?? false;
+      const nextMuted = !currentMuted;
+      optimistic((draft) => {
+        const si = draft.sinkInputs.find((s: SinkInput) => s.id === id);
+        if (si) si.muted = nextMuted;
+      });
+      sendThrottled({
+        action: Action.SetSinkInputMuted,
+        payload: { id, muted: nextMuted },
+      });
     },
     [optimistic, sendThrottled],
-  )
+  );
 
   const moveSinkInput = useCallback(
     (name: string, id: number) => {
-      optimistic(draft => {
-        const si = draft.sinkInputs.find((s: SinkInput) => s.id === id)
-        const sink = draft.sinks.find((s: Sink) => s.name === name)
-        if (si && sink) si.sinkId = sink.id
-      })
-      send({ action: Action.MoveSinkInput, payload: { name, id } })
+      optimistic((draft) => {
+        const si = draft.sinkInputs.find((s: SinkInput) => s.id === id);
+        const sink = draft.sinks.find((s: Sink) => s.name === name);
+        if (si && sink) si.sinkId = sink.id;
+      });
+      send({ action: Action.MoveSinkInput, payload: { name, id } });
     },
     [optimistic, send],
-  )
+  );
 
   const setSourceVolume = useCallback(
     (name: string, volume: number) => {
-      optimistic(draft => {
-        const source = draft.sources.find((s: Source) => s.name === name)
-        if (source) source.volume = volume
-      })
-      sendThrottled({ action: Action.SetSourceVolume, payload: { name, volume } })
+      optimistic((draft) => {
+        const source = draft.sources.find((s: Source) => s.name === name);
+        if (source) source.volume = volume;
+      });
+      sendThrottled({
+        action: Action.SetSourceVolume,
+        payload: { name, volume },
+      });
     },
     [optimistic, sendThrottled],
-  )
+  );
 
   const toggleSourceMuted = useCallback(
     (name: string) => {
-      const currentMuted = stateRef.current.status?.sources.find((s: Source) => s.name === name)?.muted ?? false
-      const nextMuted = !currentMuted
-      optimistic(draft => {
-        const source = draft.sources.find((s: Source) => s.name === name)
-        if (source) source.muted = nextMuted
-      })
-      sendThrottled({ action: Action.SetSourceMuted, payload: { name, muted: nextMuted } })
+      const currentMuted =
+        stateRef.current.status?.sources.find((s: Source) => s.name === name)
+          ?.muted ?? false;
+      const nextMuted = !currentMuted;
+      optimistic((draft) => {
+        const source = draft.sources.find((s: Source) => s.name === name);
+        if (source) source.muted = nextMuted;
+      });
+      sendThrottled({
+        action: Action.SetSourceMuted,
+        payload: { name, muted: nextMuted },
+      });
     },
     [optimistic, sendThrottled],
-  )
+  );
 
   const actions: VolumeActions = {
     setSinkVolume,
@@ -220,15 +288,15 @@ export function useVolumeStore(url: string, throttleMs = THROTTLE_TIME) {
     moveSinkInput,
     setSourceVolume,
     toggleSourceMuted,
-  }
+  };
 
   const derived = useMemo(() => {
-    const sinks = state.status?.sinks ?? []
-    const sinkInputs = state.status?.sinkInputs ?? []
-    const sources = state.status?.sources ?? []
-    const buildInfo = state.status?.buildInfo
-    return { sinks, sinkInputs, sources, buildInfo }
-  }, [state.status])
+    const sinks = state.status?.sinks ?? [];
+    const sinkInputs = state.status?.sinkInputs ?? [];
+    const sources = state.status?.sources ?? [];
+    const buildInfo = state.status?.buildInfo;
+    return { sinks, sinkInputs, sources, buildInfo };
+  }, [state.status]);
 
-  return { ...state, ...derived, wsStatus, reconnect, close, ...actions }
+  return { ...state, ...derived, wsStatus, reconnect, close, ...actions };
 }
