@@ -55,10 +55,11 @@ describe('useVolumeStore', () => {
 	it('normalizes incoming status payload', () => {
 		const { result, rerender } = renderHook(() => useVolumeStore('ws://test'))
 
-		act(() => {
-			pushStatus()
-			rerender()
-		})
+    act(() => {
+      pushStatus()
+      rerender(undefined)
+    })
+
 
 		expect(result.current.sinks[0].volume).toBe(50)
 		expect(result.current.sources[0].name).toBe('source-1')
@@ -67,10 +68,11 @@ describe('useVolumeStore', () => {
 	it('optimistically updates sink volume and unblocks later', () => {
 		const { result, rerender } = renderHook(() => useVolumeStore('ws://test', 100))
 
-		act(() => {
-			pushStatus()
-			rerender()
-		})
+    act(() => {
+      pushStatus()
+      rerender(undefined)
+    })
+
 
 		act(() => {
 			result.current.setSinkVolume('sink-1', 60)
@@ -90,10 +92,11 @@ describe('useVolumeStore', () => {
 	it('moves sink input and sends move action', () => {
 		const { result, rerender } = renderHook(() => useVolumeStore('ws://test'))
 
-		act(() => {
-			pushStatus()
-			rerender()
-		})
+    act(() => {
+      pushStatus()
+      rerender(undefined)
+    })
+
 
 		act(() => {
 			result.current.moveSinkInput('sink-2', 10)
