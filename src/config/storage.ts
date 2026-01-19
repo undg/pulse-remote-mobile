@@ -33,7 +33,8 @@ const STORAGE_KEY = "pr-rn-config";
 
 function deriveServerUrl(hostname: string, port: string, endpoint: string) {
   if (!hostname) return "";
-  return `ws://${hostname}:${port}${endpoint}`;
+  const trimmed = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `ws://${hostname}:${port}${trimmed}`;
 }
 
 const initialServerUrl = deriveServerUrl(

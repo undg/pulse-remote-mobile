@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": "./src",
-    "types": ["jest"],
+    "types": ["jest", "node"],
     "paths": {
       "config/generated/*": ["config/generated/*"],
       "config/*": ["config/*"],
