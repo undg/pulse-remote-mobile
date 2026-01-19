@@ -41,7 +41,7 @@ Line 25: Follow existing code style manually.
 Line 26: Use single quotes for strings.
 Line 27: Do not use semicolons (current files are semicolon-free).
 Line 28: Prefer trailing commas only where naturally used by React Native style objects; current code mixes but mostly minimal.
-Line 29: Keep indentation with tabs.
+Line 29: Keep indentation with two spaces.
 Line 30: Avoid unnecessary blank lines; keep sections tight.
 Line 31: Keep imports ordered: external packages first, then aliased project modules, then relative (not currently used), with React-related imports at top.
 Line 32: Use `import type` for type-only imports to reduce bundle impact.
@@ -50,7 +50,7 @@ Line 34: Do not introduce eslint/prettier configs unless requested.
 
 ## EditorConfig
 
-Line EC1: `.editorconfig` enforces utf-8, LF, tabs for indent, trims trailing whitespace, inserts final newline.
+Line EC1: `.editorconfig` enforces utf-8, LF, 2-space indent, trims trailing whitespace, inserts final newline.
 Line EC2: Markdown files keep trailing spaces (no trim) for readability.
 
 ## TypeScript Guidelines
