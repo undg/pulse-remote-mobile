@@ -23,9 +23,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.undg.pulseremote",
-      "usesCleartextTraffic": true,
-      "networkSecurityConfig": "./network_security_config.xml"
+      "package": "com.undg.pulseremote"
     },
     "web": {
       "favicon": "./assets/favicon.png"

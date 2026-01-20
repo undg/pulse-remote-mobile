@@ -63,6 +63,10 @@
       "step": "Add drag-and-drop move UX (post-MVP) per move-sink-input-plan.md"
     },
     {
+      "done": true,
+      "step": "Enable Android cleartext for Metro via expo plugin per cleartext-plan.md"
+    },
+    {
       "done": false,
       "step": "Add drag/drop for sources (requires new BE move action)"
     },
