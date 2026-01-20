@@ -36,9 +36,16 @@ const setNetworkSecurityConfig = (modResults) => {
     'xmlns:tools': TOOLS_NAMESPACE,
   }
 
-  mainApplication['tools:replace'] = 'android:usesCleartextTraffic, android:networkSecurityConfig'
-  mainApplication['android:usesCleartextTraffic'] = 'true'
-  mainApplication['android:networkSecurityConfig'] = `@xml/${NETWORK_SECURITY_CONFIG_NAME.replace('.xml', '')}`
+  delete mainApplication['tools:replace']
+  delete mainApplication['android:usesCleartextTraffic']
+  delete mainApplication['android:networkSecurityConfig']
+
+  mainApplication.$ = {
+    ...mainApplication.$,
+    'tools:replace': 'android:usesCleartextTraffic,android:networkSecurityConfig',
+    'android:usesCleartextTraffic': 'true',
+    'android:networkSecurityConfig': `@xml/${NETWORK_SECURITY_CONFIG_NAME.replace('.xml', '')}`,
+  }
 
   return modResults
 }
